@@ -1,39 +1,34 @@
-def count_words(text):
-    words = text.split()
-    return len(words)
-def count_characters(text):
-    char_count = {}
-    for char in text:
-        char = char.lower()
-        if char.isalpha():
-            if char in char_count:
-                char_count[char] += 1
-            else:
-                char_count[char] = 1 
-    return char_count  
-
-def sort_on(dict):
-    return dict["count"]
-
+import sys
+from stats import count_words, count_characters, chars_dict_to_sorted_list
 
 def main():
-    with open("books/frankenstein.txt") as f:
-        file_contents = f.read()
-        print("--- Begin report of books/frankenstein.txt ---")
-        word_count = count_words(file_contents)
-        print(f"{word_count} words found in the document\n")
+    args = sys.argv
+    if len(args) != 2:
+        print("Usage: python3 main.py <path_to_book>")
+        sys.exit(1)
 
-        character_count = count_characters(file_contents)
-        chars_list = []
-        for char, count in character_count.items():
-            chars_list.append({"char": char, "count": count})
+    book_path = args[1]
 
-        chars_list.sort(reverse=True, key=sort_on)
+    with open(book_path) as f:
+        text = f.read()
 
-        for char_dict in chars_list:
-            print(f"The '{char_dict['char']}' character was found {char_dict['count']} times")
+    print("============ BOOKBOT ============")
+    print(f"Analyzing book found at {book_path}...")
+    print("----------- Word Count ----------")
+    num_words = count_words(text)
+    print(f"Found {num_words} total words")
+    print("--------- Character Count -------")
 
-        print("--- End report ---")
-                        
+    chars_dict = count_characters(text)
+    sorted_chars = chars_dict_to_sorted_list(chars_dict)
+
+    for item in sorted_chars:
+        ch = item["char"]
+        if not ch.isalpha():
+            continue
+        print(f"{ch}: {item['num']}")
+
+    print("============= END ===============")
+
 if __name__ == "__main__":
     main()
